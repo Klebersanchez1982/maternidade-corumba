@@ -27,8 +27,8 @@ export interface User {
 }
 
 export const MOCK_USERS: User[] = [
-  { id: '1', name: 'Enf. Cláudia Silva', role: 'enfermeiro' },
-  { id: '2', name: 'Enf. Maria Santos', role: 'enfermeiro' },
+  { id: '1', name: 'Enf. Dayanna Sanchez', role: 'enfermeiro' },
+  { id: '2', name: 'Enf. Lucimara', role: 'enfermeiro' },
   { id: '3', name: 'Farm. João Oliveira', role: 'farmaceutico' },
 ];
 
