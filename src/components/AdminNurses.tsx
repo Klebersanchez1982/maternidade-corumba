@@ -153,7 +153,7 @@ export default function AdminNurses() {
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                {user.role === 'enfermeiro' ? 'Enfermagem' : 'Farmácia'}
+                {user.role === 'tecnico' ? 'Técnico(a)' : user.role === 'enfermeiro' ? 'Enfermagem' : 'Farmácia'}
                 {user.blocked && ' · Bloqueado'}
               </p>
             </div>
