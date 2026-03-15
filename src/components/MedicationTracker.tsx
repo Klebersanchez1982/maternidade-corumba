@@ -17,7 +17,11 @@ export default function MedicationTracker() {
   // My pending returns
   const myPending = checkouts.filter(c => !c.returned && c.userId === currentUser?.id);
 
-  const handleReturn = (checkoutId: string) => {
+  const handleReturn = (checkoutId: string, userId: string) => {
+    if (currentUser?.id !== userId && !currentUser?.isAdmin) {
+      toast.error('Somente quem retirou o medicamento pode devolvê-lo');
+      return;
+    }
     returnMedication(checkoutId);
     toast.success('Medicamento devolvido e estoque atualizado');
   };
@@ -44,7 +48,7 @@ export default function MedicationTracker() {
               <div key={c.id} className="flex items-center justify-between py-1">
                 <span className="text-xs text-foreground">{c.medicationName} ({c.quantity}x) - há {getTimeSince(c.checkoutTime)}</span>
                 <button
-                  onClick={() => handleReturn(c.id)}
+                  onClick={() => handleReturn(c.id, c.userId)}
                   className="text-[10px] px-2 py-1 rounded bg-success text-success-foreground font-medium hover:opacity-90 flex items-center gap-1"
                 >
                   <RotateCcw className="h-2.5 w-2.5" /> Devolver
@@ -111,13 +115,15 @@ export default function MedicationTracker() {
                 <div className="shrink-0">
                   {c.returned ? (
                     <span className="text-[10px] px-2 py-1 rounded bg-success/10 text-success font-medium">Devolvido</span>
-                  ) : (
+                  ) : (currentUser?.id === c.userId || currentUser?.isAdmin) ? (
                     <button
-                      onClick={() => handleReturn(c.id)}
+                      onClick={() => handleReturn(c.id, c.userId)}
                       className="text-[10px] px-2 py-1 rounded bg-primary text-primary-foreground font-medium hover:opacity-90 flex items-center gap-1"
                     >
                       <RotateCcw className="h-2.5 w-2.5" /> Devolver
                     </button>
+                  ) : (
+                    <span className="text-[10px] px-2 py-1 rounded bg-warning/10 text-warning font-medium">Pendente</span>
                   )}
                 </div>
               </div>

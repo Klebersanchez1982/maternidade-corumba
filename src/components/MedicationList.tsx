@@ -12,7 +12,7 @@ export default function MedicationList() {
   const [restockId, setRestockId] = useState<number | null>(null);
 
   const filtered = medications.filter(m =>
-    m.name.toLowerCase().includes(search.toLowerCase())
+    !m.blocked && m.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const critical = filtered.filter(m => getStockStatus(m) === 'critical').length;

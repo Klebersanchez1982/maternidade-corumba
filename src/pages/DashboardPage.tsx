@@ -7,7 +7,7 @@ import MedicationTracker from '@/components/MedicationTracker';
 import AdminNurses from '@/components/AdminNurses';
 import AdminMedications from '@/components/AdminMedications';
 import SupportPage from '@/components/SupportPage';
-import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill } from 'lucide-react';
+import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill, AlertTriangle } from 'lucide-react';
 
 type Tab = 'estoque' | 'historico' | 'controle' | 'admin_users' | 'admin_meds' | 'suporte';
 
@@ -20,6 +20,8 @@ export default function DashboardPage() {
 
   const isAdmin = currentUser?.isAdmin === true;
   const myPendingCount = checkouts.filter(c => !c.returned && c.userId === currentUser?.id).length;
+  const allPending = checkouts.filter(c => !c.returned);
+  const allPendingCount = allPending.length;
 
   const [showAdminMenu, setShowAdminMenu] = useState(false);
 
@@ -44,6 +46,28 @@ export default function DashboardPage() {
           </button>
         </div>
       </header>
+
+      {/* Admin pending notifications */}
+      {isAdmin && allPendingCount > 0 && tab === 'estoque' && (
+        <div className="shrink-0 px-4 py-2 bg-warning/10 border-b border-warning/20">
+          <div className="flex items-center gap-1.5">
+            <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0" />
+            <span className="text-xs font-medium text-warning">
+              {allPendingCount} medicamento(s) pendente(s) de devolução
+            </span>
+          </div>
+          <div className="mt-1 space-y-0.5">
+            {allPending.slice(0, 5).map(c => (
+              <p key={c.id} className="text-[11px] text-foreground">
+                • <span className="font-medium">{c.userName}</span> — {c.medicationName} ({c.quantity}x)
+              </p>
+            ))}
+            {allPendingCount > 5 && (
+              <p className="text-[11px] text-muted-foreground">e mais {allPendingCount - 5}...</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <main className="flex-1 overflow-hidden">

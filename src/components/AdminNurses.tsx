@@ -16,7 +16,7 @@ export default function AdminNurses() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const [role, setRole] = useState<'enfermeiro' | 'farmaceutico'>('enfermeiro');
+  const [role, setRole] = useState<'enfermeiro' | 'tecnico'>('tecnico');
   const [password, setPassword] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
@@ -58,7 +58,7 @@ export default function AdminNurses() {
   const startEdit = (user: User) => {
     setEditingId(user.id);
     setName(user.name);
-    setRole(user.role);
+    setRole(user.role === 'farmaceutico' ? 'tecnico' : user.role as 'enfermeiro' | 'tecnico');
     setPassword('');
     setShowForm(true);
   };
@@ -112,11 +112,11 @@ export default function AdminNurses() {
               />
               <select
                 value={role}
-                onChange={e => setRole(e.target.value as 'enfermeiro' | 'farmaceutico')}
+                onChange={e => setRole(e.target.value as 'enfermeiro' | 'tecnico')}
                 className="w-full h-9 px-3 rounded-md bg-background text-sm text-foreground outline-none"
               >
+                <option value="tecnico">Técnico(a)</option>
                 <option value="enfermeiro">Enfermagem</option>
-                <option value="farmaceutico">Farmácia</option>
               </select>
               <input
                 type="password"
@@ -153,7 +153,7 @@ export default function AdminNurses() {
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                {user.role === 'enfermeiro' ? 'Enfermagem' : 'Farmácia'}
+                {user.role === 'tecnico' ? 'Técnico(a)' : user.role === 'enfermeiro' ? 'Enfermagem' : 'Farmácia'}
                 {user.blocked && ' · Bloqueado'}
               </p>
             </div>
@@ -161,14 +161,16 @@ export default function AdminNurses() {
               <button onClick={() => startEdit(user)} className="h-7 w-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent">
                 <Edit2 className="h-3 w-3" />
               </button>
-              <button
-                onClick={() => toggleBlockUser(user.id)}
-                className={`h-7 w-7 rounded-md flex items-center justify-center ${user.blocked ? 'bg-success/10 text-success hover:bg-success/20' : 'bg-warning/10 text-warning hover:bg-warning/20'}`}
-                title={user.blocked ? 'Desbloquear' : 'Bloquear'}
-              >
-                {user.blocked ? <CheckCircle className="h-3 w-3" /> : <Ban className="h-3 w-3" />}
-              </button>
-              {user.id !== currentUser?.id && (
+              {!user.isAdmin && (
+                <button
+                  onClick={() => toggleBlockUser(user.id)}
+                  className={`h-7 w-7 rounded-md flex items-center justify-center ${user.blocked ? 'bg-success/10 text-success hover:bg-success/20' : 'bg-warning/10 text-warning hover:bg-warning/20'}`}
+                  title={user.blocked ? 'Desbloquear' : 'Bloquear'}
+                >
+                  {user.blocked ? <CheckCircle className="h-3 w-3" /> : <Ban className="h-3 w-3" />}
+                </button>
+              )}
+              {user.id !== currentUser?.id && !user.isAdmin && (
                 confirmDelete === user.id ? (
                   <div className="flex items-center gap-1">
                     <button onClick={() => handleDelete(user.id)} className="text-[10px] px-2 py-1 rounded bg-destructive text-destructive-foreground font-medium">Sim</button>

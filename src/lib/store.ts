@@ -23,6 +23,7 @@ interface AppState {
   addMedication: (med: Omit<Medication, 'id'>) => void;
   updateMedication: (id: number, data: Partial<Omit<Medication, 'id'>>) => void;
   deleteMedication: (id: number) => void;
+  toggleBlockMedication: (id: number) => void;
 
   // Dispense / Restock
   dispenseMedication: (medId: number, qty: number, shift: 'Manhã' | 'Tarde' | 'Noite', patient: string, bed: string) => void;
@@ -72,6 +73,9 @@ export const useAppStore = create<AppState>()(
       },
       deleteMedication: (id) => {
         set({ medications: get().medications.filter(m => m.id !== id) });
+      },
+      toggleBlockMedication: (id) => {
+        set({ medications: get().medications.map(m => m.id === id ? { ...m, blocked: !m.blocked } : m) });
       },
 
       // Dispense
@@ -171,6 +175,8 @@ export const useAppStore = create<AppState>()(
         const state = get();
         const checkout = state.checkouts.find(c => c.id === checkoutId);
         if (!checkout || !state.currentUser) return;
+        // Only the user who checked out can return (or admin)
+        if (checkout.userId !== state.currentUser.id && !state.currentUser.isAdmin) return;
 
         // Create return transaction
         const transaction: Transaction = {

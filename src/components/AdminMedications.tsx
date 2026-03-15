@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { Medication } from '@/lib/data';
-import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Ban, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -10,6 +10,7 @@ export default function AdminMedications() {
   const addMedication = useAppStore(s => s.addMedication);
   const updateMedication = useAppStore(s => s.updateMedication);
   const deleteMedication = useAppStore(s => s.deleteMedication);
+  const toggleBlockMedication = useAppStore(s => s.toggleBlockMedication);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -108,12 +109,22 @@ export default function AdminMedications() {
         {filtered.map(med => (
           <div key={med.id} className="flex items-center justify-between py-2.5 shadow-divider">
             <div className="flex-1 min-w-0 mr-2">
-              <p className="text-sm font-medium text-foreground truncate">{med.name}</p>
-              <p className="text-xs text-muted-foreground">{med.dosage} · Qtd: {med.quantity} · Mín: {med.minStock}</p>
+              <p className={`text-sm font-medium truncate ${med.blocked ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{med.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {med.dosage} · Qtd: {med.quantity} · Mín: {med.minStock}
+                {med.blocked && ' · Bloqueado'}
+              </p>
             </div>
             <div className="flex items-center gap-1">
               <button onClick={() => startEdit(med)} className="h-7 w-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent">
                 <Edit2 className="h-3 w-3" />
+              </button>
+              <button
+                onClick={() => { toggleBlockMedication(med.id); toast.success(med.blocked ? 'Medicamento desbloqueado' : 'Medicamento bloqueado'); }}
+                className={`h-7 w-7 rounded-md flex items-center justify-center ${med.blocked ? 'bg-success/10 text-success hover:bg-success/20' : 'bg-warning/10 text-warning hover:bg-warning/20'}`}
+                title={med.blocked ? 'Desbloquear' : 'Bloquear'}
+              >
+                {med.blocked ? <CheckCircle className="h-3 w-3" /> : <Ban className="h-3 w-3" />}
               </button>
               {confirmDelete === med.id ? (
                 <div className="flex items-center gap-1">
