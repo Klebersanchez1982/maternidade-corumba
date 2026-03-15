@@ -20,19 +20,38 @@ export interface Transaction {
   timestamp: number;
 }
 
+export interface MedicationCheckout {
+  id: string;
+  medicationId: number;
+  medicationName: string;
+  quantity: number;
+  userId: string;
+  userName: string;
+  patient?: string;
+  bed?: string;
+  checkoutTime: number;
+  checkoutDate: string;
+  returnTime?: number;
+  returnDate?: string;
+  returned: boolean;
+}
+
 export interface User {
   id: string;
   name: string;
   role: 'enfermeiro' | 'farmaceutico';
+  password: string;
+  blocked: boolean;
+  isAdmin: boolean;
 }
 
-export const MOCK_USERS: User[] = [
-  { id: '1', name: 'Enf. Dayanna Sanchez', role: 'enfermeiro' },
-  { id: '2', name: 'Enf. Lucimara', role: 'enfermeiro' },
-  { id: '3', name: 'Farm. João Oliveira', role: 'farmaceutico' },
+export const INITIAL_USERS: User[] = [
+  { id: '1', name: 'Enf. Dayanna Sanchez', role: 'enfermeiro', password: '1234', blocked: false, isAdmin: true },
+  { id: '2', name: 'Enf. Lucimara', role: 'enfermeiro', password: '1234', blocked: false, isAdmin: false },
+  { id: '3', name: 'Farm. João Oliveira', role: 'farmaceutico', password: '1234', blocked: false, isAdmin: false },
 ];
 
-export const MOCK_MEDICATIONS: Medication[] = [
+export const INITIAL_MEDICATIONS: Medication[] = [
   { id: 1, name: 'Dipirona EV Ampola', dosage: '1g/2ml', quantity: 20, minStock: 5 },
   { id: 2, name: 'Plasil EV Ampola', dosage: '10mg/2ml', quantity: 10, minStock: 5 },
   { id: 3, name: 'Buscopam Simples EV', dosage: '20mg/ml', quantity: 15, minStock: 5 },
@@ -75,4 +94,11 @@ export function getStockStatus(med: Medication): 'critical' | 'warning' | 'ok' {
   if (med.quantity <= med.minStock) return 'critical';
   if (med.quantity <= med.minStock * 2) return 'warning';
   return 'ok';
+}
+
+export function formatDateTime(timestamp: number): string {
+  return new Date(timestamp).toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: '2-digit',
+    hour: '2-digit', minute: '2-digit'
+  });
 }
