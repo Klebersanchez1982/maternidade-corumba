@@ -7,7 +7,7 @@ import MedicationTracker from '@/components/MedicationTracker';
 import AdminNurses from '@/components/AdminNurses';
 import AdminMedications from '@/components/AdminMedications';
 import SupportPage from '@/components/SupportPage';
-import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill } from 'lucide-react';
+import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill, AlertTriangle } from 'lucide-react';
 
 type Tab = 'estoque' | 'historico' | 'controle' | 'admin_users' | 'admin_meds' | 'suporte';
 
