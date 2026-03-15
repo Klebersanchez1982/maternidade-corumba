@@ -161,14 +161,16 @@ export default function AdminNurses() {
               <button onClick={() => startEdit(user)} className="h-7 w-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent">
                 <Edit2 className="h-3 w-3" />
               </button>
-              <button
-                onClick={() => toggleBlockUser(user.id)}
-                className={`h-7 w-7 rounded-md flex items-center justify-center ${user.blocked ? 'bg-success/10 text-success hover:bg-success/20' : 'bg-warning/10 text-warning hover:bg-warning/20'}`}
-                title={user.blocked ? 'Desbloquear' : 'Bloquear'}
-              >
-                {user.blocked ? <CheckCircle className="h-3 w-3" /> : <Ban className="h-3 w-3" />}
-              </button>
-              {user.id !== currentUser?.id && (
+              {!user.isAdmin && (
+                <button
+                  onClick={() => toggleBlockUser(user.id)}
+                  className={`h-7 w-7 rounded-md flex items-center justify-center ${user.blocked ? 'bg-success/10 text-success hover:bg-success/20' : 'bg-warning/10 text-warning hover:bg-warning/20'}`}
+                  title={user.blocked ? 'Desbloquear' : 'Bloquear'}
+                >
+                  {user.blocked ? <CheckCircle className="h-3 w-3" /> : <Ban className="h-3 w-3" />}
+                </button>
+              )}
+              {user.id !== currentUser?.id && !user.isAdmin && (
                 confirmDelete === user.id ? (
                   <div className="flex items-center gap-1">
                     <button onClick={() => handleDelete(user.id)} className="text-[10px] px-2 py-1 rounded bg-destructive text-destructive-foreground font-medium">Sim</button>
