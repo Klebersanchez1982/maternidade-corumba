@@ -112,11 +112,11 @@ export default function AdminNurses() {
               />
               <select
                 value={role}
-                onChange={e => setRole(e.target.value as 'enfermeiro' | 'farmaceutico')}
+                onChange={e => setRole(e.target.value as 'enfermeiro' | 'tecnico')}
                 className="w-full h-9 px-3 rounded-md bg-background text-sm text-foreground outline-none"
               >
+                <option value="tecnico">Técnico(a)</option>
                 <option value="enfermeiro">Enfermagem</option>
-                <option value="farmaceutico">Farmácia</option>
               </select>
               <input
                 type="password"
