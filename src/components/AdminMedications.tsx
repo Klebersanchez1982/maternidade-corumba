@@ -10,6 +10,7 @@ export default function AdminMedications() {
   const addMedication = useAppStore(s => s.addMedication);
   const updateMedication = useAppStore(s => s.updateMedication);
   const deleteMedication = useAppStore(s => s.deleteMedication);
+  const toggleBlockMedication = useAppStore(s => s.toggleBlockMedication);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
