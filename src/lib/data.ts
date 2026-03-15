@@ -4,6 +4,7 @@ export interface Medication {
   dosage: string;
   quantity: number;
   minStock: number;
+  blocked?: boolean;
 }
 
 export interface Transaction {
