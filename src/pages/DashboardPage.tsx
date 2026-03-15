@@ -20,6 +20,8 @@ export default function DashboardPage() {
 
   const isAdmin = currentUser?.isAdmin === true;
   const myPendingCount = checkouts.filter(c => !c.returned && c.userId === currentUser?.id).length;
+  const allPending = checkouts.filter(c => !c.returned);
+  const allPendingCount = allPending.length;
 
   const [showAdminMenu, setShowAdminMenu] = useState(false);
 
