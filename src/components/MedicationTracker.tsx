@@ -17,7 +17,11 @@ export default function MedicationTracker() {
   // My pending returns
   const myPending = checkouts.filter(c => !c.returned && c.userId === currentUser?.id);
 
-  const handleReturn = (checkoutId: string) => {
+  const handleReturn = (checkoutId: string, userId: string) => {
+    if (currentUser?.id !== userId && !currentUser?.isAdmin) {
+      toast.error('Somente quem retirou o medicamento pode devolvê-lo');
+      return;
+    }
     returnMedication(checkoutId);
     toast.success('Medicamento devolvido e estoque atualizado');
   };
