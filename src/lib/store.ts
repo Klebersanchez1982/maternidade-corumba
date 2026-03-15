@@ -23,6 +23,8 @@ interface AppState {
   addMedication: (med: Omit<Medication, 'id'>) => void;
   updateMedication: (id: number, data: Partial<Omit<Medication, 'id'>>) => void;
   deleteMedication: (id: number) => void;
+  toggleBlockMedication: (id: number) => void;
+  deleteMedication: (id: number) => void;
 
   // Dispense / Restock
   dispenseMedication: (medId: number, qty: number, shift: 'Manhã' | 'Tarde' | 'Noite', patient: string, bed: string) => void;
