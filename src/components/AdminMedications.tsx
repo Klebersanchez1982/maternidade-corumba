@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { Medication } from '@/lib/data';
-import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Ban, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
