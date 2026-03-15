@@ -75,6 +75,9 @@ export const useAppStore = create<AppState>()(
       deleteMedication: (id) => {
         set({ medications: get().medications.filter(m => m.id !== id) });
       },
+      toggleBlockMedication: (id) => {
+        set({ medications: get().medications.map(m => m.id === id ? { ...m, blocked: !m.blocked } : m) });
+      },
 
       // Dispense
       dispenseMedication: (medId, qty, shift, patient, bed) => {
