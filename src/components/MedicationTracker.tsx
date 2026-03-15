@@ -48,7 +48,7 @@ export default function MedicationTracker() {
               <div key={c.id} className="flex items-center justify-between py-1">
                 <span className="text-xs text-foreground">{c.medicationName} ({c.quantity}x) - há {getTimeSince(c.checkoutTime)}</span>
                 <button
-                  onClick={() => handleReturn(c.id)}
+                  onClick={() => handleReturn(c.id, c.userId)}
                   className="text-[10px] px-2 py-1 rounded bg-success text-success-foreground font-medium hover:opacity-90 flex items-center gap-1"
                 >
                   <RotateCcw className="h-2.5 w-2.5" /> Devolver
