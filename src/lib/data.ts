@@ -40,7 +40,7 @@ export interface MedicationCheckout {
 export interface User {
   id: string;
   name: string;
-  role: 'enfermeiro' | 'farmaceutico';
+  role: 'enfermeiro' | 'tecnico' | 'farmaceutico';
   password: string;
   blocked: boolean;
   isAdmin: boolean;

@@ -171,6 +171,8 @@ export const useAppStore = create<AppState>()(
         const state = get();
         const checkout = state.checkouts.find(c => c.id === checkoutId);
         if (!checkout || !state.currentUser) return;
+        // Only the user who checked out can return (or admin)
+        if (checkout.userId !== state.currentUser.id && !state.currentUser.isAdmin) return;
 
         // Create return transaction
         const transaction: Transaction = {

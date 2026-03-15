@@ -58,7 +58,7 @@ export default function AdminNurses() {
   const startEdit = (user: User) => {
     setEditingId(user.id);
     setName(user.name);
-    setRole(user.role);
+    setRole(user.role === 'farmaceutico' ? 'tecnico' : user.role as 'enfermeiro' | 'tecnico');
     setPassword('');
     setShowForm(true);
   };

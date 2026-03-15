@@ -115,13 +115,15 @@ export default function MedicationTracker() {
                 <div className="shrink-0">
                   {c.returned ? (
                     <span className="text-[10px] px-2 py-1 rounded bg-success/10 text-success font-medium">Devolvido</span>
-                  ) : (
+                  ) : (currentUser?.id === c.userId || currentUser?.isAdmin) ? (
                     <button
-                      onClick={() => handleReturn(c.id)}
+                      onClick={() => handleReturn(c.id, c.userId)}
                       className="text-[10px] px-2 py-1 rounded bg-primary text-primary-foreground font-medium hover:opacity-90 flex items-center gap-1"
                     >
                       <RotateCcw className="h-2.5 w-2.5" /> Devolver
                     </button>
+                  ) : (
+                    <span className="text-[10px] px-2 py-1 rounded bg-warning/10 text-warning font-medium">Pendente</span>
                   )}
                 </div>
               </div>
