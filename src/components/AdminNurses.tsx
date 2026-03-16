@@ -46,12 +46,12 @@ export default function AdminNurses() {
     }
 
     if (editingId) {
-      const data: Partial<Omit<User, 'id'>> = { name: trimmedName, role };
+      const data: Partial<Omit<User, 'id'>> = { name: trimmedName, role, canInventory };
       if (password) data.password = password;
       updateUser(editingId, data);
       toast.success('Usuário atualizado');
     } else {
-      addUser({ name: trimmedName, role, password: password || '1234', blocked: false, isAdmin: false });
+      addUser({ name: trimmedName, role, password: password || '1234', blocked: false, isAdmin: false, canInventory });
       toast.success('Usuário cadastrado');
     }
     resetForm();
