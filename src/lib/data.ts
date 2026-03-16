@@ -44,6 +44,21 @@ export interface User {
   password: string;
   blocked: boolean;
   isAdmin: boolean;
+  canInventory?: boolean;
+}
+
+export interface InventoryLog {
+  id: string;
+  userId: string;
+  userName: string;
+  date: string;
+  timestamp: number;
+  items: {
+    medicationId: number;
+    medicationName: string;
+    previousQty: number;
+    newQty: number;
+  }[];
 }
 
 export const INITIAL_USERS: User[] = [

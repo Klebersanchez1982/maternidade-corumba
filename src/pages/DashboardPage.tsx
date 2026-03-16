@@ -8,10 +8,11 @@ import AdminNurses from '@/components/AdminNurses';
 import AdminMedications from '@/components/AdminMedications';
 import AdminDashboard from '@/components/AdminDashboard';
 import AdminReports from '@/components/AdminReports';
+import InventoryChecklist from '@/components/InventoryChecklist';
 import SupportPage from '@/components/SupportPage';
-import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill, AlertTriangle, BarChart3, FileText } from 'lucide-react';
+import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill, AlertTriangle, BarChart3, FileText, ClipboardCheck } from 'lucide-react';
 
-type Tab = 'estoque' | 'historico' | 'controle' | 'admin_users' | 'admin_meds' | 'admin_dashboard' | 'admin_reports' | 'suporte';
+type Tab = 'estoque' | 'historico' | 'controle' | 'inventario' | 'admin_users' | 'admin_meds' | 'admin_dashboard' | 'admin_reports' | 'suporte';
 
 export default function DashboardPage() {
   const [tab, setTab] = useState<Tab>('estoque');
