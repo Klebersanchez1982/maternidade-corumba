@@ -7,13 +7,16 @@ import RestockDrawer from './RestockDrawer';
 
 export default function MedicationList() {
   const medications = useAppStore(s => s.medications);
+  const currentUser = useAppStore(s => s.currentUser);
   const [search, setSearch] = useState('');
   const [dispenseId, setDispenseId] = useState<number | null>(null);
   const [restockId, setRestockId] = useState<number | null>(null);
 
-  const filtered = medications.filter(m =>
-    !m.blocked && m.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const isAdmin = currentUser?.isAdmin === true;
+
+  const filtered = medications
+    .filter(m => !m.blocked && m.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 
   const critical = filtered.filter(m => getStockStatus(m) === 'critical').length;
 
@@ -64,12 +67,14 @@ export default function MedicationList() {
                 >
                   Saída
                 </button>
-                <button
-                  onClick={() => setRestockId(med.id)}
-                  className="text-[11px] px-2 py-1 rounded-md bg-muted text-foreground font-medium hover:bg-accent"
-                >
-                  Entrada
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => setRestockId(med.id)}
+                    className="text-[11px] px-2 py-1 rounded-md bg-muted text-foreground font-medium hover:bg-accent"
+                  >
+                    Entrada
+                  </button>
+                )}
               </div>
             </div>
           );
