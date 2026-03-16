@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { formatDateTime } from '@/lib/data';
-import { FileSpreadsheet, FileText, Download } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download, ClipboardCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminReports() {
