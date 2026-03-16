@@ -208,6 +208,44 @@ export const useAppStore = create<AppState>()(
           transactions: [transaction, ...state.transactions],
         });
       },
+
+      // Inventory
+      performInventory: (items) => {
+        const state = get();
+        if (!state.currentUser) return;
+
+        const logItems = items
+          .map(item => {
+            const med = state.medications.find(m => m.id === item.medicationId);
+            if (!med || med.quantity === item.newQty) return null;
+            return {
+              medicationId: item.medicationId,
+              medicationName: med.name,
+              previousQty: med.quantity,
+              newQty: item.newQty,
+            };
+          })
+          .filter(Boolean) as InventoryLog['items'];
+
+        if (logItems.length === 0) return;
+
+        const log: InventoryLog = {
+          id: crypto.randomUUID(),
+          userId: state.currentUser.id,
+          userName: state.currentUser.name,
+          date: new Date().toLocaleDateString('pt-BR'),
+          timestamp: Date.now(),
+          items: logItems,
+        };
+
+        set({
+          medications: state.medications.map(m => {
+            const change = items.find(i => i.medicationId === m.id);
+            return change ? { ...m, quantity: change.newQty } : m;
+          }),
+          inventoryLogs: [log, ...state.inventoryLogs],
+        });
+      },
     }),
     { name: 'pharma-store' }
   )
