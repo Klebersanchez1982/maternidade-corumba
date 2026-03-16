@@ -23,8 +23,9 @@ export default function AdminNurses() {
 
   const resetForm = () => {
     setName('');
-    setRole('enfermeiro');
+    setRole('tecnico');
     setPassword('');
+    setCanInventory(false);
     setShowForm(false);
     setEditingId(null);
   };
