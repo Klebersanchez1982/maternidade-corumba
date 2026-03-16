@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 export default function AdminReports() {
   const transactions = useAppStore(s => s.transactions);
   const checkouts = useAppStore(s => s.checkouts);
+  const inventoryLogs = useAppStore(s => s.inventoryLogs);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
