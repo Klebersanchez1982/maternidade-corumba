@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { formatDateTime } from '@/lib/data';
-import { FileSpreadsheet, FileText, Download } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download, ClipboardCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminReports() {
   const transactions = useAppStore(s => s.transactions);
   const checkouts = useAppStore(s => s.checkouts);
+  const inventoryLogs = useAppStore(s => s.inventoryLogs);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -213,6 +214,37 @@ export default function AdminReports() {
               <Download className="h-3.5 w-3.5" /> Exportar Excel
             </button>
           </div>
+        </div>
+      </div>
+      {/* Inventory Log */}
+      <div className="px-4 pb-4">
+        <div className="bg-card rounded-lg p-3 border border-border">
+          <div className="flex items-center gap-2 mb-2">
+            <ClipboardCheck className="h-4 w-4 text-primary" />
+            <h3 className="text-xs font-semibold text-foreground">Histórico de Inventários</h3>
+          </div>
+          {inventoryLogs.length === 0 ? (
+            <p className="text-[11px] text-muted-foreground">Nenhum inventário realizado.</p>
+          ) : (
+            <div className="space-y-2 max-h-64 overflow-auto">
+              {inventoryLogs.map(log => (
+                <div key={log.id} className="bg-muted rounded-md p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-foreground">{log.userName}</span>
+                    <span className="text-[10px] text-muted-foreground">{formatDateTime(log.timestamp)}</span>
+                  </div>
+                  {log.items.map((item, i) => (
+                    <p key={i} className="text-[11px] text-foreground">
+                      • {item.medicationName}: <span className="text-muted-foreground">{item.previousQty}</span> → <span className="font-medium">{item.newQty}</span>
+                      <span className={`ml-1 text-[10px] font-bold ${item.newQty > item.previousQty ? 'text-success' : item.newQty < item.previousQty ? 'text-destructive' : ''}`}>
+                        ({item.newQty - item.previousQty > 0 ? '+' : ''}{item.newQty - item.previousQty})
+                      </span>
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

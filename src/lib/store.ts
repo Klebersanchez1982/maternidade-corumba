@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Medication, Transaction, User, MedicationCheckout, INITIAL_MEDICATIONS, INITIAL_USERS } from './data';
+import { Medication, Transaction, User, MedicationCheckout, InventoryLog, INITIAL_MEDICATIONS, INITIAL_USERS } from './data';
 
 interface AppState {
   currentUser: User | null;
@@ -8,6 +8,7 @@ interface AppState {
   medications: Medication[];
   transactions: Transaction[];
   checkouts: MedicationCheckout[];
+  inventoryLogs: InventoryLog[];
 
   // Auth
   login: (user: User) => void;
@@ -32,6 +33,9 @@ interface AppState {
   // Checkout tracking
   checkoutMedication: (medId: number, qty: number, patient?: string, bed?: string) => void;
   returnMedication: (checkoutId: string) => void;
+
+  // Inventory
+  performInventory: (items: { medicationId: number; newQty: number }[]) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -42,6 +46,7 @@ export const useAppStore = create<AppState>()(
       medications: INITIAL_MEDICATIONS,
       transactions: [],
       checkouts: [],
+      inventoryLogs: [],
 
       login: (user) => set({ currentUser: user }),
       logout: () => set({ currentUser: null }),
@@ -201,6 +206,44 @@ export const useAppStore = create<AppState>()(
             m.id === checkout.medicationId ? { ...m, quantity: m.quantity + checkout.quantity } : m
           ),
           transactions: [transaction, ...state.transactions],
+        });
+      },
+
+      // Inventory
+      performInventory: (items) => {
+        const state = get();
+        if (!state.currentUser) return;
+
+        const logItems = items
+          .map(item => {
+            const med = state.medications.find(m => m.id === item.medicationId);
+            if (!med || med.quantity === item.newQty) return null;
+            return {
+              medicationId: item.medicationId,
+              medicationName: med.name,
+              previousQty: med.quantity,
+              newQty: item.newQty,
+            };
+          })
+          .filter(Boolean) as InventoryLog['items'];
+
+        if (logItems.length === 0) return;
+
+        const log: InventoryLog = {
+          id: crypto.randomUUID(),
+          userId: state.currentUser.id,
+          userName: state.currentUser.name,
+          date: new Date().toLocaleDateString('pt-BR'),
+          timestamp: Date.now(),
+          items: logItems,
+        };
+
+        set({
+          medications: state.medications.map(m => {
+            const change = items.find(i => i.medicationId === m.id);
+            return change ? { ...m, quantity: change.newQty } : m;
+          }),
+          inventoryLogs: [log, ...state.inventoryLogs],
         });
       },
     }),

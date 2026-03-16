@@ -8,10 +8,11 @@ import AdminNurses from '@/components/AdminNurses';
 import AdminMedications from '@/components/AdminMedications';
 import AdminDashboard from '@/components/AdminDashboard';
 import AdminReports from '@/components/AdminReports';
+import InventoryChecklist from '@/components/InventoryChecklist';
 import SupportPage from '@/components/SupportPage';
-import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill, AlertTriangle, BarChart3, FileText } from 'lucide-react';
+import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill, AlertTriangle, BarChart3, FileText, ClipboardCheck } from 'lucide-react';
 
-type Tab = 'estoque' | 'historico' | 'controle' | 'admin_users' | 'admin_meds' | 'admin_dashboard' | 'admin_reports' | 'suporte';
+type Tab = 'estoque' | 'historico' | 'controle' | 'inventario' | 'admin_users' | 'admin_meds' | 'admin_dashboard' | 'admin_reports' | 'suporte';
 
 export default function DashboardPage() {
   const [tab, setTab] = useState<Tab>('estoque');
@@ -72,10 +73,11 @@ export default function DashboardPage() {
       )}
 
       {/* Content */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden pb-[env(safe-area-inset-bottom)]">
         {tab === 'estoque' && <MedicationList />}
         {tab === 'historico' && <TransactionHistory />}
         {tab === 'controle' && <MedicationTracker />}
+        {tab === 'inventario' && (currentUser?.canInventory || isAdmin) && <InventoryChecklist />}
         {tab === 'admin_users' && isAdmin && <AdminNurses />}
         {tab === 'admin_meds' && isAdmin && <AdminMedications />}
         {tab === 'admin_dashboard' && isAdmin && <AdminDashboard />}
@@ -83,103 +85,117 @@ export default function DashboardPage() {
         {tab === 'suporte' && <SupportPage />}
       </main>
 
-      {/* Admin submenu */}
-      {isAdmin && showAdminMenu && (
-        <div className="shrink-0 flex bg-card shadow-[0_-1px_0_0_rgba(0,0,0,0.05)]">
-          <button
-            onClick={() => { setTab('admin_dashboard'); setShowAdminMenu(false); }}
-            className={`flex-1 flex flex-col items-center py-2 text-[10px] font-medium transition-colors ${
-              tab === 'admin_dashboard' ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <BarChart3 className="h-3.5 w-3.5 mb-0.5" />
-            Dashboard
-          </button>
-          <button
-            onClick={() => { setTab('admin_users'); setShowAdminMenu(false); }}
-            className={`flex-1 flex flex-col items-center py-2 text-[10px] font-medium transition-colors ${
-              tab === 'admin_users' ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <Users className="h-3.5 w-3.5 mb-0.5" />
-            Enfermeiras
-          </button>
-          <button
-            onClick={() => { setTab('admin_meds'); setShowAdminMenu(false); }}
-            className={`flex-1 flex flex-col items-center py-2 text-[10px] font-medium transition-colors ${
-              tab === 'admin_meds' ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <Pill className="h-3.5 w-3.5 mb-0.5" />
-            Medicamentos
-          </button>
-          <button
-            onClick={() => { setTab('admin_reports'); setShowAdminMenu(false); }}
-            className={`flex-1 flex flex-col items-center py-2 text-[10px] font-medium transition-colors ${
-              tab === 'admin_reports' ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <FileText className="h-3.5 w-3.5 mb-0.5" />
-            Relatórios
-          </button>
-        </div>
-      )}
-
-      {/* Tab Bar */}
-      <nav className="shrink-0 flex shadow-[0_-1px_0_0_rgba(0,0,0,0.05)] bg-card">
-        <button
-          onClick={() => { setTab('estoque'); setShowAdminMenu(false); }}
-          className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
-            tab === 'estoque' ? 'text-primary' : 'text-muted-foreground'
-          }`}
-        >
-          <Package className="h-4 w-4 mb-0.5" />
-          Estoque
-        </button>
-        <button
-          onClick={() => { setTab('historico'); setShowAdminMenu(false); }}
-          className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
-            tab === 'historico' ? 'text-primary' : 'text-muted-foreground'
-          }`}
-        >
-          <ClipboardList className="h-4 w-4 mb-0.5" />
-          Histórico
-        </button>
-        <button
-          onClick={() => { setTab('controle'); setShowAdminMenu(false); }}
-          className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors relative ${
-            tab === 'controle' ? 'text-primary' : 'text-muted-foreground'
-          }`}
-        >
-          <ArrowLeftRight className="h-4 w-4 mb-0.5" />
-          Controle
-          {myPendingCount > 0 && (
-            <span className="absolute top-1.5 right-1/4 h-4 min-w-[16px] px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
-              {myPendingCount}
-            </span>
-          )}
-        </button>
-        {isAdmin && (
-          <button
-            onClick={() => setShowAdminMenu(!showAdminMenu)}
-            className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
-              ['admin_users', 'admin_meds', 'admin_dashboard', 'admin_reports'].includes(tab) ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <Settings className="h-4 w-4 mb-0.5" />
-            Cadastros
-          </button>
+      {/* Fixed bottom area */}
+      <div className="shrink-0 sticky bottom-0 z-20">
+        {/* Admin submenu */}
+        {isAdmin && showAdminMenu && (
+          <div className="flex bg-card shadow-[0_-1px_0_0_rgba(0,0,0,0.05)]">
+            <button
+              onClick={() => { setTab('admin_dashboard'); setShowAdminMenu(false); }}
+              className={`flex-1 flex flex-col items-center py-2 text-[10px] font-medium transition-colors ${
+                tab === 'admin_dashboard' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <BarChart3 className="h-3.5 w-3.5 mb-0.5" />
+              Dashboard
+            </button>
+            <button
+              onClick={() => { setTab('admin_users'); setShowAdminMenu(false); }}
+              className={`flex-1 flex flex-col items-center py-2 text-[10px] font-medium transition-colors ${
+                tab === 'admin_users' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Users className="h-3.5 w-3.5 mb-0.5" />
+              Enfermeiras
+            </button>
+            <button
+              onClick={() => { setTab('admin_meds'); setShowAdminMenu(false); }}
+              className={`flex-1 flex flex-col items-center py-2 text-[10px] font-medium transition-colors ${
+                tab === 'admin_meds' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Pill className="h-3.5 w-3.5 mb-0.5" />
+              Medicamentos
+            </button>
+            <button
+              onClick={() => { setTab('admin_reports'); setShowAdminMenu(false); }}
+              className={`flex-1 flex flex-col items-center py-2 text-[10px] font-medium transition-colors ${
+                tab === 'admin_reports' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <FileText className="h-3.5 w-3.5 mb-0.5" />
+              Relatórios
+            </button>
+          </div>
         )}
-        <button
-          onClick={() => { setTab('suporte'); setShowAdminMenu(false); }}
-          className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
-            tab === 'suporte' ? 'text-primary' : 'text-muted-foreground'
-          }`}
-        >
-          <Headphones className="h-4 w-4 mb-0.5" />
-          Suporte
-        </button>
-      </nav>
+
+        {/* Tab Bar */}
+        <nav className="flex shadow-[0_-1px_0_0_rgba(0,0,0,0.05)] bg-card">
+          <button
+            onClick={() => { setTab('estoque'); setShowAdminMenu(false); }}
+            className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
+              tab === 'estoque' ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            <Package className="h-4 w-4 mb-0.5" />
+            Estoque
+          </button>
+          <button
+            onClick={() => { setTab('historico'); setShowAdminMenu(false); }}
+            className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
+              tab === 'historico' ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            <ClipboardList className="h-4 w-4 mb-0.5" />
+            Histórico
+          </button>
+          <button
+            onClick={() => { setTab('controle'); setShowAdminMenu(false); }}
+            className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors relative ${
+              tab === 'controle' ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            <ArrowLeftRight className="h-4 w-4 mb-0.5" />
+            Controle
+            {myPendingCount > 0 && (
+              <span className="absolute top-1.5 right-1/4 h-4 min-w-[16px] px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                {myPendingCount}
+              </span>
+            )}
+          </button>
+          {(currentUser?.canInventory || isAdmin) && (
+            <button
+              onClick={() => { setTab('inventario'); setShowAdminMenu(false); }}
+              className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
+                tab === 'inventario' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <ClipboardCheck className="h-4 w-4 mb-0.5" />
+              Inventário
+            </button>
+          )}
+          {isAdmin && (
+            <button
+              onClick={() => setShowAdminMenu(!showAdminMenu)}
+              className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
+                ['admin_users', 'admin_meds', 'admin_dashboard', 'admin_reports'].includes(tab) ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Settings className="h-4 w-4 mb-0.5" />
+              Cadastros
+            </button>
+          )}
+          <button
+            onClick={() => { setTab('suporte'); setShowAdminMenu(false); }}
+            className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
+              tab === 'suporte' ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            <Headphones className="h-4 w-4 mb-0.5" />
+            Suporte
+          </button>
+        </nav>
+      </div>
     </div>
   );
 }

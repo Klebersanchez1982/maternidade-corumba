@@ -18,12 +18,14 @@ export default function AdminNurses() {
   const [name, setName] = useState('');
   const [role, setRole] = useState<'enfermeiro' | 'tecnico'>('tecnico');
   const [password, setPassword] = useState('');
+  const [canInventory, setCanInventory] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const resetForm = () => {
     setName('');
-    setRole('enfermeiro');
+    setRole('tecnico');
     setPassword('');
+    setCanInventory(false);
     setShowForm(false);
     setEditingId(null);
   };
@@ -44,12 +46,12 @@ export default function AdminNurses() {
     }
 
     if (editingId) {
-      const data: Partial<Omit<User, 'id'>> = { name: trimmedName, role };
+      const data: Partial<Omit<User, 'id'>> = { name: trimmedName, role, canInventory };
       if (password) data.password = password;
       updateUser(editingId, data);
       toast.success('Usuário atualizado');
     } else {
-      addUser({ name: trimmedName, role, password: password || '1234', blocked: false, isAdmin: false });
+      addUser({ name: trimmedName, role, password: password || '1234', blocked: false, isAdmin: false, canInventory });
       toast.success('Usuário cadastrado');
     }
     resetForm();
@@ -60,6 +62,7 @@ export default function AdminNurses() {
     setName(user.name);
     setRole(user.role === 'farmaceutico' ? 'tecnico' : user.role as 'enfermeiro' | 'tecnico');
     setPassword('');
+    setCanInventory(user.canInventory || false);
     setShowForm(true);
   };
 
@@ -128,6 +131,15 @@ export default function AdminNurses() {
                 maxLength={20}
                 className="w-full h-9 px-3 rounded-md bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none"
               />
+              <label className="flex items-center gap-2 px-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={canInventory}
+                  onChange={e => setCanInventory(e.target.checked)}
+                  className="h-4 w-4 rounded border-primary text-primary focus:ring-primary/30"
+                />
+                <span className="text-xs text-foreground">Autorizar inventário</span>
+              </label>
               <button
                 onClick={handleSave}
                 className="w-full h-9 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90"
