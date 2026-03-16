@@ -59,7 +59,7 @@ export default function AdminMedications() {
     setShowForm(true);
   };
 
-  const filtered = medications.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = medications.filter(m => m.name.toLowerCase().includes(search.toLowerCase())).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 
   return (
     <div className="flex flex-col h-full">

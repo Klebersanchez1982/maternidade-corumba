@@ -141,7 +141,7 @@ export default function AdminNurses() {
 
       {/* List */}
       <div className="flex-1 overflow-auto px-4 pb-4">
-        {users.map(user => (
+        {[...users].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).map(user => (
           <div key={user.id} className="flex items-center justify-between py-2.5 shadow-divider">
             <div className="flex-1 min-w-0 mr-2">
               <div className="flex items-center gap-1.5">
