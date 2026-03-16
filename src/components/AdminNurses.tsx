@@ -18,6 +18,7 @@ export default function AdminNurses() {
   const [name, setName] = useState('');
   const [role, setRole] = useState<'enfermeiro' | 'tecnico'>('tecnico');
   const [password, setPassword] = useState('');
+  const [canInventory, setCanInventory] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const resetForm = () => {
