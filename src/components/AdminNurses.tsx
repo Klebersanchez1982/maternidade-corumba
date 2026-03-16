@@ -131,6 +131,15 @@ export default function AdminNurses() {
                 maxLength={20}
                 className="w-full h-9 px-3 rounded-md bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none"
               />
+              <label className="flex items-center gap-2 px-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={canInventory}
+                  onChange={e => setCanInventory(e.target.checked)}
+                  className="h-4 w-4 rounded border-primary text-primary focus:ring-primary/30"
+                />
+                <span className="text-xs text-foreground">Autorizar inventário</span>
+              </label>
               <button
                 onClick={handleSave}
                 className="w-full h-9 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90"
