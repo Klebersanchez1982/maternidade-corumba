@@ -7,13 +7,16 @@ import RestockDrawer from './RestockDrawer';
 
 export default function MedicationList() {
   const medications = useAppStore(s => s.medications);
+  const currentUser = useAppStore(s => s.currentUser);
   const [search, setSearch] = useState('');
   const [dispenseId, setDispenseId] = useState<number | null>(null);
   const [restockId, setRestockId] = useState<number | null>(null);
 
-  const filtered = medications.filter(m =>
-    !m.blocked && m.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const isAdmin = currentUser?.isAdmin === true;
+
+  const filtered = medications
+    .filter(m => !m.blocked && m.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 
   const critical = filtered.filter(m => getStockStatus(m) === 'critical').length;
 
