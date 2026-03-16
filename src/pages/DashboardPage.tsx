@@ -73,10 +73,11 @@ export default function DashboardPage() {
       )}
 
       {/* Content */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden pb-[env(safe-area-inset-bottom)]">
         {tab === 'estoque' && <MedicationList />}
         {tab === 'historico' && <TransactionHistory />}
         {tab === 'controle' && <MedicationTracker />}
+        {tab === 'inventario' && (currentUser?.canInventory || isAdmin) && <InventoryChecklist />}
         {tab === 'admin_users' && isAdmin && <AdminNurses />}
         {tab === 'admin_meds' && isAdmin && <AdminMedications />}
         {tab === 'admin_dashboard' && isAdmin && <AdminDashboard />}
