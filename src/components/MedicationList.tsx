@@ -67,12 +67,14 @@ export default function MedicationList() {
                 >
                   Saída
                 </button>
-                <button
-                  onClick={() => setRestockId(med.id)}
-                  className="text-[11px] px-2 py-1 rounded-md bg-muted text-foreground font-medium hover:bg-accent"
-                >
-                  Entrada
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => setRestockId(med.id)}
+                    className="text-[11px] px-2 py-1 rounded-md bg-muted text-foreground font-medium hover:bg-accent"
+                  >
+                    Entrada
+                  </button>
+                )}
               </div>
             </div>
           );
