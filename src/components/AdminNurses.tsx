@@ -62,6 +62,7 @@ export default function AdminNurses() {
     setName(user.name);
     setRole(user.role === 'farmaceutico' ? 'tecnico' : user.role as 'enfermeiro' | 'tecnico');
     setPassword('');
+    setCanInventory(user.canInventory || false);
     setShowForm(true);
   };
 
