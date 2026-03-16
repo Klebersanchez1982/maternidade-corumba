@@ -46,6 +46,7 @@ export const useAppStore = create<AppState>()(
       medications: INITIAL_MEDICATIONS,
       transactions: [],
       checkouts: [],
+      inventoryLogs: [],
 
       login: (user) => set({ currentUser: user }),
       logout: () => set({ currentUser: null }),
