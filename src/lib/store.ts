@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Medication, Transaction, User, MedicationCheckout, INITIAL_MEDICATIONS, INITIAL_USERS } from './data';
+import { Medication, Transaction, User, MedicationCheckout, InventoryLog, INITIAL_MEDICATIONS, INITIAL_USERS } from './data';
 
 interface AppState {
   currentUser: User | null;
@@ -8,6 +8,7 @@ interface AppState {
   medications: Medication[];
   transactions: Transaction[];
   checkouts: MedicationCheckout[];
+  inventoryLogs: InventoryLog[];
 
   // Auth
   login: (user: User) => void;
@@ -32,6 +33,9 @@ interface AppState {
   // Checkout tracking
   checkoutMedication: (medId: number, qty: number, patient?: string, bed?: string) => void;
   returnMedication: (checkoutId: string) => void;
+
+  // Inventory
+  performInventory: (items: { medicationId: number; newQty: number }[]) => void;
 }
 
 export const useAppStore = create<AppState>()(
