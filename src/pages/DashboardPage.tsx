@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppStore } from '@/lib/store';
 import { getCurrentShift } from '@/lib/data';
 import MedicationList from '@/components/MedicationList';
@@ -12,6 +12,8 @@ import InventoryChecklist from '@/components/InventoryChecklist';
 import SupportPage from '@/components/SupportPage';
 import { Package, ClipboardList, LogOut, Settings, ArrowLeftRight, Headphones, Users, Pill, AlertTriangle, BarChart3, FileText, ClipboardCheck } from 'lucide-react';
 
+const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
 type Tab = 'estoque' | 'historico' | 'controle' | 'inventario' | 'admin_users' | 'admin_meds' | 'admin_dashboard' | 'admin_reports' | 'suporte';
 
 export default function DashboardPage() {
@@ -22,11 +24,35 @@ export default function DashboardPage() {
   const shift = getCurrentShift();
 
   const isAdmin = currentUser?.isAdmin === true;
+  const isDev = currentUser?.id === '__dev__';
   const myPendingCount = checkouts.filter(c => !c.returned && c.userId === currentUser?.id).length;
   const allPending = checkouts.filter(c => !c.returned);
   const allPendingCount = allPending.length;
 
   const [showAdminMenu, setShowAdminMenu] = useState(false);
+
+  // Inactivity auto-logout
+  const handleLogout = useCallback(() => {
+    logout();
+  }, [logout]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(handleLogout, INACTIVITY_TIMEOUT);
+    };
+
+    const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+    events.forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+
+    return () => {
+      clearTimeout(timer);
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+    };
+  }, [handleLogout]);
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -38,6 +64,7 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">
               {currentUser?.name} · Turno: {shift}
               {isAdmin && <span className="ml-1 text-primary font-medium">(Admin)</span>}
+              {isDev && <span className="ml-1 text-primary font-medium">(Dev)</span>}
             </p>
           </div>
           <button
@@ -51,7 +78,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Admin pending notifications */}
-      {isAdmin && allPendingCount > 0 && tab === 'estoque' && (
+      {(isAdmin || isDev) && allPendingCount > 0 && tab === 'estoque' && (
         <div className="shrink-0 px-4 py-2 bg-warning/10 border-b border-warning/20">
           <div className="flex items-center gap-1.5">
             <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0" />
@@ -77,18 +104,18 @@ export default function DashboardPage() {
         {tab === 'estoque' && <MedicationList />}
         {tab === 'historico' && <TransactionHistory />}
         {tab === 'controle' && <MedicationTracker />}
-        {tab === 'inventario' && (currentUser?.canInventory || isAdmin) && <InventoryChecklist />}
-        {tab === 'admin_users' && isAdmin && <AdminNurses />}
-        {tab === 'admin_meds' && isAdmin && <AdminMedications />}
-        {tab === 'admin_dashboard' && isAdmin && <AdminDashboard />}
-        {tab === 'admin_reports' && isAdmin && <AdminReports />}
+        {tab === 'inventario' && (currentUser?.canInventory || isAdmin || isDev) && <InventoryChecklist />}
+        {tab === 'admin_users' && (isAdmin || isDev) && <AdminNurses />}
+        {tab === 'admin_meds' && (isAdmin || isDev) && <AdminMedications />}
+        {tab === 'admin_dashboard' && (isAdmin || isDev) && <AdminDashboard />}
+        {tab === 'admin_reports' && (isAdmin || isDev) && <AdminReports />}
         {tab === 'suporte' && <SupportPage />}
       </main>
 
       {/* Fixed bottom area */}
       <div className="shrink-0 sticky bottom-0 z-20">
         {/* Admin submenu */}
-        {isAdmin && showAdminMenu && (
+        {(isAdmin || isDev) && showAdminMenu && (
           <div className="flex bg-card shadow-[0_-1px_0_0_rgba(0,0,0,0.05)]">
             <button
               onClick={() => { setTab('admin_dashboard'); setShowAdminMenu(false); }}
@@ -163,7 +190,7 @@ export default function DashboardPage() {
               </span>
             )}
           </button>
-          {(currentUser?.canInventory || isAdmin) && (
+          {(currentUser?.canInventory || isAdmin || isDev) && (
             <button
               onClick={() => { setTab('inventario'); setShowAdminMenu(false); }}
               className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
@@ -174,7 +201,7 @@ export default function DashboardPage() {
               Checklist
             </button>
           )}
-          {isAdmin && (
+          {(isAdmin || isDev) && (
             <button
               onClick={() => setShowAdminMenu(!showAdminMenu)}
               className={`flex-1 flex flex-col items-center py-2.5 text-[11px] font-medium transition-colors ${
