@@ -221,7 +221,7 @@ export default function AdminReports() {
         <div className="bg-card rounded-lg p-3 border border-border">
           <div className="flex items-center gap-2 mb-2">
             <ClipboardCheck className="h-4 w-4 text-primary" />
-            <h3 className="text-xs font-semibold text-foreground">Histórico de Inventários</h3>
+            <h3 className="text-xs font-semibold text-foreground">Histórico de Checklists</h3>
           </div>
           {inventoryLogs.length === 0 ? (
             <p className="text-[11px] text-muted-foreground">Nenhum inventário realizado.</p>
