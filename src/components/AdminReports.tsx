@@ -224,7 +224,7 @@ export default function AdminReports() {
             <h3 className="text-xs font-semibold text-foreground">Histórico de Checklists</h3>
           </div>
           {inventoryLogs.length === 0 ? (
-            <p className="text-[11px] text-muted-foreground">Nenhum inventário realizado.</p>
+            <p className="text-[11px] text-muted-foreground">Nenhum checklist realizado.</p>
           ) : (
             <div className="space-y-2 max-h-64 overflow-auto">
               {inventoryLogs.map(log => (

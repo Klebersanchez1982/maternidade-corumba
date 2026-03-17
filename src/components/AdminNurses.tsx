@@ -138,7 +138,7 @@ export default function AdminNurses() {
                   onChange={e => setCanInventory(e.target.checked)}
                   className="h-4 w-4 rounded border-primary text-primary focus:ring-primary/30"
                 />
-                <span className="text-xs text-foreground">Autorizar inventário</span>
+                <span className="text-xs text-foreground">Autorizar checklist</span>
               </label>
               <button
                 onClick={handleSave}

@@ -131,7 +131,7 @@ export default function InventoryChecklist() {
           onClick={handleSave}
           className="flex-[2] h-10 rounded-lg bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-1.5 hover:opacity-90"
         >
-          <ClipboardCheck className="h-3.5 w-3.5" /> Salvar Inventário ({checkedCount})
+          <ClipboardCheck className="h-3.5 w-3.5" /> Salvar Checklist ({checkedCount})
         </button>
       </div>
     </div>
