@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { Medication } from '@/lib/data';
-import { Plus, Edit2, Trash2, X, Ban, CheckCircle } from 'lucide-react';
+import { Plus, Edit2, X, Ban, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -9,7 +9,6 @@ export default function AdminMedications() {
   const medications = useAppStore(s => s.medications);
   const addMedication = useAppStore(s => s.addMedication);
   const updateMedication = useAppStore(s => s.updateMedication);
-  const deleteMedication = useAppStore(s => s.deleteMedication);
   const toggleBlockMedication = useAppStore(s => s.toggleBlockMedication);
 
   const [showForm, setShowForm] = useState(false);
@@ -18,11 +17,14 @@ export default function AdminMedications() {
   const [dosage, setDosage] = useState('');
   const [quantity, setQuantity] = useState('');
   const [minStock, setMinStock] = useState('');
-  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [lote, setLote] = useState('');
+  const [validade, setValidade] = useState('');
+  const [controlled, setControlled] = useState(false);
   const [search, setSearch] = useState('');
 
   const resetForm = () => {
     setName(''); setDosage(''); setQuantity(''); setMinStock('');
+    setLote(''); setValidade(''); setControlled(false);
     setShowForm(false); setEditingId(null);
   };
 
@@ -40,11 +42,21 @@ export default function AdminMedications() {
     const qty = parseInt(quantity) || 0;
     const min = parseInt(minStock) || 3;
 
+    const medData = {
+      name: trimmedName,
+      dosage: trimmedDosage,
+      quantity: qty,
+      minStock: min,
+      lote: lote.trim() || undefined,
+      validade: validade || undefined,
+      controlled,
+    };
+
     if (editingId !== null) {
-      updateMedication(editingId, { name: trimmedName, dosage: trimmedDosage, quantity: qty, minStock: min });
+      updateMedication(editingId, medData);
       toast.success('Medicamento atualizado');
     } else {
-      addMedication({ name: trimmedName, dosage: trimmedDosage, quantity: qty, minStock: min });
+      addMedication(medData);
       toast.success('Medicamento cadastrado');
     }
     resetForm();
@@ -56,10 +68,19 @@ export default function AdminMedications() {
     setDosage(med.dosage);
     setQuantity(String(med.quantity));
     setMinStock(String(med.minStock));
+    setLote(med.lote || '');
+    setValidade(med.validade || '');
+    setControlled(med.controlled || false);
     setShowForm(true);
   };
 
-  const filtered = medications.filter(m => m.name.toLowerCase().includes(search.toLowerCase())).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+  const filtered = medications
+    .filter(m => m.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      if (a.blocked && !b.blocked) return 1;
+      if (!a.blocked && b.blocked) return -1;
+      return a.name.localeCompare(b.name, 'pt-BR');
+    });
 
   return (
     <div className="flex flex-col h-full">
@@ -87,6 +108,19 @@ export default function AdminMedications() {
                 <input type="number" inputMode="numeric" value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="Qtd" className="flex-1 h-9 px-3 rounded-md bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none" />
                 <input type="number" inputMode="numeric" value={minStock} onChange={e => setMinStock(e.target.value)} placeholder="Est. mínimo" className="flex-1 h-9 px-3 rounded-md bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none" />
               </div>
+              <div className="flex gap-2">
+                <input value={lote} onChange={e => setLote(e.target.value)} placeholder="Lote" maxLength={50} className="flex-1 h-9 px-3 rounded-md bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none" />
+                <input type="date" value={validade} onChange={e => setValidade(e.target.value)} placeholder="Validade" className="flex-1 h-9 px-3 rounded-md bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none" />
+              </div>
+              <label className="flex items-center gap-2 px-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={controlled}
+                  onChange={e => setControlled(e.target.checked)}
+                  className="h-4 w-4 rounded border-primary text-primary focus:ring-primary/30"
+                />
+                <span className="text-xs text-foreground">Controle especial (destaque em vermelho)</span>
+              </label>
               <button onClick={handleSave} className="w-full h-9 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
                 {editingId !== null ? 'Salvar' : 'Cadastrar'}
               </button>
@@ -109,9 +143,14 @@ export default function AdminMedications() {
         {filtered.map(med => (
           <div key={med.id} className="flex items-center justify-between py-2.5 shadow-divider">
             <div className="flex-1 min-w-0 mr-2">
-              <p className={`text-sm font-medium truncate ${med.blocked ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{med.name}</p>
+              <p className={`text-sm font-medium truncate ${med.blocked ? 'text-muted-foreground line-through' : med.controlled ? 'text-destructive' : 'text-foreground'}`}>
+                {med.name}
+                {med.controlled && !med.blocked && <span className="ml-1 text-[10px] font-bold">⚠</span>}
+              </p>
               <p className="text-xs text-muted-foreground">
                 {med.dosage} · Qtd: {med.quantity} · Mín: {med.minStock}
+                {med.lote && ` · Lote: ${med.lote}`}
+                {med.validade && ` · Val: ${new Date(med.validade).toLocaleDateString('pt-BR')}`}
                 {med.blocked && ' · Bloqueado'}
               </p>
             </div>
@@ -126,16 +165,6 @@ export default function AdminMedications() {
               >
                 {med.blocked ? <CheckCircle className="h-3 w-3" /> : <Ban className="h-3 w-3" />}
               </button>
-              {confirmDelete === med.id ? (
-                <div className="flex items-center gap-1">
-                  <button onClick={() => { deleteMedication(med.id); setConfirmDelete(null); toast.success('Medicamento excluído'); }} className="text-[10px] px-2 py-1 rounded bg-destructive text-destructive-foreground font-medium">Sim</button>
-                  <button onClick={() => setConfirmDelete(null)} className="text-[10px] px-2 py-1 rounded bg-muted text-foreground font-medium">Não</button>
-                </div>
-              ) : (
-                <button onClick={() => setConfirmDelete(med.id)} className="h-7 w-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center hover:bg-destructive/20">
-                  <Trash2 className="h-3 w-3" />
-                </button>
-              )}
             </div>
           </div>
         ))}

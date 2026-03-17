@@ -18,6 +18,7 @@ export default function MedicationList() {
     .filter(m => !m.blocked && m.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 
+
   const critical = filtered.filter(m => getStockStatus(m) === 'critical').length;
 
   return (
@@ -51,7 +52,10 @@ export default function MedicationList() {
               className="flex items-center justify-between py-2.5 shadow-divider"
             >
               <div className="flex-1 min-w-0 mr-3">
-                <p className="text-sm font-medium text-foreground truncate">{med.name}</p>
+                <p className={`text-sm font-medium truncate ${med.controlled ? 'text-destructive' : 'text-foreground'}`}>
+                  {med.name}
+                  {med.controlled && <span className="ml-1 text-[10px] font-bold">⚠</span>}
+                </p>
                 <p className="text-xs text-muted-foreground">{med.dosage}</p>
               </div>
               <div className="flex items-center gap-2">

@@ -71,6 +71,10 @@ export default function AdminNurses() {
       toast.error('Não é possível excluir seu próprio usuário');
       return;
     }
+    if (id === '__dev__') {
+      toast.error('Este usuário não pode ser excluído');
+      return;
+    }
     deleteUser(id);
     setConfirmDelete(null);
     toast.success('Usuário excluído');
