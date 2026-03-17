@@ -44,7 +44,7 @@ export default function InventoryChecklist() {
     performInventory(items);
     setChecked(new Set());
     setQuantities({});
-    toast.success('Inventário salvo com sucesso!');
+    toast.success('Checklist salvo com sucesso!');
   };
 
   const handleReset = () => {
