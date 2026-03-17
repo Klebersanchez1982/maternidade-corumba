@@ -18,6 +18,7 @@ export default function MedicationList() {
     .filter(m => !m.blocked && m.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 
+
   const critical = filtered.filter(m => getStockStatus(m) === 'critical').length;
 
   return (
