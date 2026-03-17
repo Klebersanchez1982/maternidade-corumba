@@ -44,7 +44,7 @@ export default function InventoryChecklist() {
     performInventory(items);
     setChecked(new Set());
     setQuantities({});
-    toast.success('Inventário salvo com sucesso!');
+    toast.success('Checklist salvo com sucesso!');
   };
 
   const handleReset = () => {
@@ -61,7 +61,7 @@ export default function InventoryChecklist() {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <ClipboardCheck className="h-4 w-4 text-primary" />
-            <h2 className="text-sm font-semibold text-foreground">Inventário</h2>
+            <h2 className="text-sm font-semibold text-foreground">Checklist</h2>
           </div>
           <span className="text-xs text-muted-foreground">
             {checkedCount}/{totalCount} verificados
@@ -131,7 +131,7 @@ export default function InventoryChecklist() {
           onClick={handleSave}
           className="flex-[2] h-10 rounded-lg bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-1.5 hover:opacity-90"
         >
-          <ClipboardCheck className="h-3.5 w-3.5" /> Salvar Inventário ({checkedCount})
+          <ClipboardCheck className="h-3.5 w-3.5" /> Salvar Checklist ({checkedCount})
         </button>
       </div>
     </div>

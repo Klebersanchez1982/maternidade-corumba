@@ -171,7 +171,7 @@ export default function DashboardPage() {
               }`}
             >
               <ClipboardCheck className="h-4 w-4 mb-0.5" />
-              Inventário
+              Checklist
             </button>
           )}
           {isAdmin && (
