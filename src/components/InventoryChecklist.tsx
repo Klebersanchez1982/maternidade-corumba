@@ -61,7 +61,7 @@ export default function InventoryChecklist() {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <ClipboardCheck className="h-4 w-4 text-primary" />
-            <h2 className="text-sm font-semibold text-foreground">Inventário</h2>
+            <h2 className="text-sm font-semibold text-foreground">Checklist</h2>
           </div>
           <span className="text-xs text-muted-foreground">
             {checkedCount}/{totalCount} verificados
